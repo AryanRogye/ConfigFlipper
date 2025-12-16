@@ -12,6 +12,7 @@ type root struct {
 	choices [3]string
 	config models.UserConfig
 }
+
 func (r *root) View() string {
 	var ret string;
 
@@ -45,7 +46,7 @@ func (r *root) View() string {
 	return ret
 }
 
-func (r *root) Update(msg tea.Msg) {
+func (r *root) Update(msg tea.Msg, onSetScreen func(screen screen)) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -58,8 +59,12 @@ func (r *root) Update(msg tea.Msg) {
 				r.cursor--
 			}
 		case "enter":
-			if r.choices[r.cursor] == "Open Config Folder" {
+
+			choice := r.choices[r.cursor]
+			if  choice == "Open Config Folder" {
 				r.config.OpenFile()
+			} else if choice == "Create New Configuration" {
+				onSetScreen(screenCreateConfig)
 			}
 		}
 	}

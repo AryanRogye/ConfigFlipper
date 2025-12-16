@@ -2,7 +2,8 @@ OS_NAME := $(shell uname -s | tr A-Z a-z)
 BIN := ConfigFlipper
 
 build:
-	go build .
+	go build cmd/configflipper/main.go
+	mv main ${BIN}
 run:
 	go run cmd/configflipper/main.go
 
