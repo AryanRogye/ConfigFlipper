@@ -1,10 +1,11 @@
 package models
 
-
-import(
+import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 )
 
 
@@ -30,3 +31,20 @@ func (c *UserConfig)CreateOrGetConfig() error {
 	return nil
 }
 
+func (c UserConfig)OpenFile() error {
+	path := c.ConfigDir
+	var cmd *exec.Cmd
+
+	switch runtime.GOOS {
+	case "darwin":
+		cmd = exec.Command("open", path)
+	case "windows":
+		cmd = exec.Command("explorer", path)
+	case "linux":
+		cmd = exec.Command("xdg-open", path)
+	default:
+		return fmt.Errorf("unsupported platform")
+	}
+
+	return cmd.Start()
+}

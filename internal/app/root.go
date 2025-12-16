@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/AryanRogye/ConfigFlipper/internal/models"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -9,6 +10,7 @@ import (
 type root struct {
 	cursor  int
 	choices [3]string
+	config models.UserConfig
 }
 func (r *root) View() string {
 	var ret string;
@@ -54,6 +56,10 @@ func (r *root) Update(msg tea.Msg) {
 		case "k":
 			if r.cursor > 0 {
 				r.cursor--
+			}
+		case "enter":
+			if r.choices[r.cursor] == "Open Config Folder" {
+				r.config.OpenFile()
 			}
 		}
 	}

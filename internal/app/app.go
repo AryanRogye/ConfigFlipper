@@ -3,6 +3,7 @@ package app
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/AryanRogye/ConfigFlipper/internal/models"
 )
 
 var appStyle = lipgloss.NewStyle().
@@ -23,7 +24,7 @@ type model struct {
 	root root
 }
 
-func InitialModel() model {
+func InitialModel(config models.UserConfig) model {
 	return model{
 		screen: screenRoot,
 		/// Creating Root Screen
@@ -34,6 +35,7 @@ func InitialModel() model {
 				"Select Configuration",
 				"Open Config Folder",
 			},
+			config: config,
 		},
 		/// Other Screens Here
 	}
