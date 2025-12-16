@@ -1,9 +1,6 @@
 package app
 
 import (
-	// "github.com/charmbracelet/bubbles/list"
-	"fmt"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -20,18 +17,6 @@ const (
 	screenSelect
 )
 
-type root struct {
-	cursor  int
-	choices [3]string
-}
-func (r root) View() string {
-	var ret string;
-	for _, choice := range(r.choices) {
-		ret += fmt.Sprintf("[ ] %s\n", choice)
-	}
-	return ret
-}
-
 type model struct {
 	screen screen
 
@@ -41,6 +26,7 @@ type model struct {
 func InitialModel() model {
 	return model{
 		screen: screenRoot,
+		/// Creating Root Screen
 		root: root {
 			cursor: 0,
 			choices: [3]string{
@@ -49,12 +35,14 @@ func InitialModel() model {
 				"Open Config Folder",
 			},
 		},
+		/// Other Screens Here
 	}
 }
 
 func (m model) Init() tea.Cmd {
 	return nil
 }
+
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
@@ -64,6 +52,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		}
+	}
+
+	switch m.screen {
+	case screenRoot:
+		m.root.Update(msg)
+	default: break
 	}
 
 
