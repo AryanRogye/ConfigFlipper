@@ -3,7 +3,6 @@ package app
 import (
 	"github.com/AryanRogye/ConfigFlipper/internal/models"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 )
 
 type createConfigConfirmationScreen struct {
@@ -15,34 +14,19 @@ type createConfigConfirmationScreen struct {
 func (cc *createConfigConfirmationScreen) View() string {
 	var ret string
 
-	selectedStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("229")).
-		Background(lipgloss.Color("63"))
-
-	titleStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("250"))
-	titleUnderline := lipgloss.NewStyle().
-		Bold(true).Underline(true).
-		Foreground(lipgloss.Color("250"))
-
-	normalStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("250"))
-
-	ret += titleStyle.Render("Are You Sure You Want to Create This Config?")
+	ret += TitleStyle.Render("Are You Sure You Want to Create This Config?")
 	ret += "\n"
 
-	ret += titleUnderline.Render(cc.data.Name())
+	ret += TitleUnderline.Render(cc.data.Name())
 	ret += "\n\n"
 
 	for i, choice := range cc.choices {
 		if i == cc.cursor {
-			ret += selectedStyle.Render("[x] ")
-			ret += selectedStyle.Render(choice)
+			ret += SelectedStyle.Render("[x] ")
+			ret += SelectedStyle.Render(choice)
 		} else {
-			ret += normalStyle.Render("[ ] ")
-			ret += normalStyle.Render(choice)
+			ret += NormalStyle.Render("[ ] ")
+			ret += NormalStyle.Render(choice)
 		}
 		ret += "\n"
 	}

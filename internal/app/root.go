@@ -4,42 +4,28 @@ import (
 	"fmt"
 	"github.com/AryanRogye/ConfigFlipper/internal/models"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 )
 
 type root struct {
 	cursor  int
 	choices [3]string
-	config models.UserConfig
+	config  models.UserConfig
 }
 
 func (r *root) View() string {
-	var ret string;
+	var ret string
 
-	title := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("63")).
-		Render("ConfigFlipper")
-
-	selectedStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("229")).
-		Background(lipgloss.Color("63"))
-
-	normalStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("250"))
-
-	ret += title
+	ret += TitleStyle.Render("ConfigFlipper")
 	ret += "\n\n"
 
-	for i, choice := range(r.choices) {
+	for i, choice := range r.choices {
 		if i == r.cursor {
 			line := fmt.Sprintf("[x] %s", choice)
-			ret += selectedStyle.Render(line)
+			ret += SelectedStyle.Render(line)
 			ret += "\n"
 		} else {
 			line := fmt.Sprintf("[ ] %s", choice)
-			ret += normalStyle.Render(line)
+			ret += NormalStyle.Render(line)
 			ret += "\n"
 		}
 	}
@@ -51,7 +37,7 @@ func (r *root) Update(msg tea.Msg, onSetScreen func(screen screen)) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "j":
-			if r.cursor < len(r.choices) - 1 {
+			if r.cursor < len(r.choices)-1 {
 				r.cursor++
 			}
 		case "k":
@@ -61,7 +47,7 @@ func (r *root) Update(msg tea.Msg, onSetScreen func(screen screen)) {
 		case "enter":
 
 			choice := r.choices[r.cursor]
-			if  choice == "Open Config Folder" {
+			if choice == "Open Config Folder" {
 				r.config.OpenFile()
 			} else if choice == "Create New Configuration" {
 				onSetScreen(screenCreateConfig)

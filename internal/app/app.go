@@ -6,10 +6,26 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var appStyle = lipgloss.NewStyle().
+var AppStyle = lipgloss.NewStyle().
 	Padding(1, 2).
 	Border(lipgloss.RoundedBorder()).
 	BorderForeground(lipgloss.Color("63"))
+
+var SelectedStyle = lipgloss.NewStyle().
+	Bold(true).
+	Foreground(lipgloss.Color("229")).
+	Background(lipgloss.Color("63"))
+
+var TitleStyle = lipgloss.NewStyle().
+	Bold(true).
+	Foreground(lipgloss.Color("250"))
+
+var TitleUnderline = lipgloss.NewStyle().
+	Bold(true).Underline(true).
+	Foreground(lipgloss.Color("250"))
+
+var NormalStyle = lipgloss.NewStyle().
+	Foreground(lipgloss.Color("250"))
 
 type screen int
 
@@ -101,11 +117,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	switch m.screen {
 	case screenRoot:
-		return appStyle.Render(m.root.View())
+		return AppStyle.Render(m.root.View())
 	case screenCreateConfig:
-		return appStyle.Render(m.createConfigScreen.View())
+		return AppStyle.Render(m.createConfigScreen.View())
 	case screenCreateConfigConfirmation:
-		return appStyle.Render(m.createConfigConfirmationScreen.View())
+		return AppStyle.Render(m.createConfigConfirmationScreen.View())
 	default:
 		return "Unkown\n"
 	}

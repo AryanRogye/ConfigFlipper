@@ -3,7 +3,6 @@ package app
 import (
 	"github.com/AryanRogye/ConfigFlipper/internal/models"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 )
 
 type createConfigScreen struct {
@@ -16,22 +15,14 @@ type createConfigScreen struct {
 func (cc *createConfigScreen) View() string {
 	var ret string
 
-	selectedStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("229")).
-		Background(lipgloss.Color("63"))
-
-	normalStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("250"))
-
-	ret += normalStyle.Render("Create Config Screen")
+	ret += NormalStyle.Render("Create Config Screen")
 	ret += "\n\n"
 
 	if cc.choices[0] == "Go Back" {
 		if cc.cursor == 0 {
-			ret += selectedStyle.Render("Go Back")
+			ret += SelectedStyle.Render("Go Back")
 		} else {
-			ret += normalStyle.Render("Go Back")
+			ret += NormalStyle.Render("Go Back")
 		}
 		ret += "\n"
 	}
@@ -48,19 +39,19 @@ func (cc *createConfigScreen) View() string {
 		switch entry.(type) {
 		case models.File:
 			if selected {
-				ret += selectedStyle.Render("󰂺 ")
-				ret += selectedStyle.Render(entry.Name())
+				ret += SelectedStyle.Render("󰂺 ")
+				ret += SelectedStyle.Render(entry.Name())
 			} else {
-				ret += normalStyle.Render("󰂺 ")
-				ret += normalStyle.Render(entry.Name())
+				ret += NormalStyle.Render("󰂺 ")
+				ret += NormalStyle.Render(entry.Name())
 			}
 		case models.Folder:
 			if selected {
-				ret += selectedStyle.Render(" ")
-				ret += selectedStyle.Render(entry.Name())
+				ret += SelectedStyle.Render(" ")
+				ret += SelectedStyle.Render(entry.Name())
 			} else {
-				ret += normalStyle.Render(" ")
-				ret += normalStyle.Render(entry.Name())
+				ret += NormalStyle.Render(" ")
+				ret += NormalStyle.Render(entry.Name())
 			}
 		}
 		ret += "\n"
