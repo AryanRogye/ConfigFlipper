@@ -7,6 +7,9 @@ build:
 run:
 	go run cmd/configflipper/main.go
 
+check_race:
+	go run -race cmd/configflipper/main.go
+
 install: build
 ifeq ($(OS_NAME),darwin)
 	@echo "Installing to /usr/local/bin/$(BIN)"

@@ -11,6 +11,7 @@ import (
 
 type UserConfig struct {
 	ConfigDir string
+	CurrentDirectory CurrentDirectory
 }
 
 // Define the permissions for the new directory (0755 is common:
@@ -27,7 +28,6 @@ func (c *UserConfig)CreateOrGetConfig() error {
 	}
 
 	/// At this point, we already confirm the user has the config folder
-	fmt.Println("Confirm User has Config Folder")
 	return nil
 }
 
