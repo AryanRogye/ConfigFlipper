@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+
 	"github.com/AryanRogye/ConfigFlipper/internal/models"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -48,7 +49,7 @@ func (r *root) Update(msg tea.Msg, onSetScreen func(screen screen)) {
 
 			choice := r.choices[r.cursor]
 			if choice == "Open Config Folder" {
-				r.config.OpenFile()
+				r.config.OpenConfigFolder()
 			} else if choice == "Create New Configuration" {
 				onSetScreen(screenCreateConfig)
 			}

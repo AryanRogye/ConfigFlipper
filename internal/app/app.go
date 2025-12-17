@@ -79,7 +79,7 @@ func InitialModel(config models.UserConfig) model {
 				"Go Back",
 			},
 		},
-		createConfigConfirmationScreen: NewCreateConfigConfirmationScreen(),
+		createConfigConfirmationScreen: NewCreateConfigConfirmationScreen(config),
 	}
 
 	return model

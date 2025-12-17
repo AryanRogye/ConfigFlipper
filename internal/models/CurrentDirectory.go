@@ -23,7 +23,6 @@ func GetCurrentDirectoryData() (CurrentDirectory, error) {
 		return cd, err
 	}
 
-
 	entries, err := os.ReadDir(currentDirectory)
 
 	if err != nil {

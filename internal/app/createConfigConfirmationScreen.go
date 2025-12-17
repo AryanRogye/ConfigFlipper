@@ -11,6 +11,7 @@ type createConfigConfirmationScreen struct {
 	cursor  int
 	choices [2]string
 	input   textinput.Model
+	config  models.UserConfig
 
 	editingName    bool
 	err            string
@@ -18,13 +19,14 @@ type createConfigConfirmationScreen struct {
 	currentErrTick int
 }
 
-func NewCreateConfigConfirmationScreen() createConfigConfirmationScreen {
+func NewCreateConfigConfirmationScreen(config models.UserConfig) createConfigConfirmationScreen {
 	c := createConfigConfirmationScreen{
 		cursor: 0,
 		choices: [2]string{
 			"[ Go Back ]",
 			"[ Create Config ]",
 		},
+		config: config,
 		errUpdateTick:  5,
 		currentErrTick: 0,
 	}
