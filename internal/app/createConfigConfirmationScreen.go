@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/AryanRogye/ConfigFlipper/internal/models"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -9,6 +10,39 @@ type createConfigConfirmationScreen struct {
 	data    models.CurrentDirectoryData
 	cursor  int
 	choices [2]string
+	input   textinput.Model
+
+	editingName    bool
+	err            string
+	errUpdateTick  int
+	currentErrTick int
+}
+
+func NewCreateConfigConfirmationScreen() createConfigConfirmationScreen {
+	c := createConfigConfirmationScreen{
+		cursor: 0,
+		choices: [2]string{
+			"[ Go Back ]",
+			"[ Create Config ]",
+		},
+		errUpdateTick:  5,
+		currentErrTick: 0,
+	}
+
+	input := textinput.New()
+	input.CharLimit = 64
+	input.Width = 30
+	input.Cursor.Style = FocusedStyle
+
+	input.Placeholder = "Enter Config Name"
+
+	input.PlaceholderStyle = DimBlueStyle
+	input.PromptStyle = DimBlueStyle
+
+	input.TextStyle = FocusedStyle
+	c.input = input
+
+	return c
 }
 
 func (cc *createConfigConfirmationScreen) View() string {
@@ -20,40 +54,100 @@ func (cc *createConfigConfirmationScreen) View() string {
 	ret += TitleUnderline.Render(cc.data.Name())
 	ret += "\n\n"
 
-	for i, choice := range cc.choices {
-		if i == cc.cursor {
-			ret += SelectedStyle.Render("[x] ")
-			ret += SelectedStyle.Render(choice)
-		} else {
-			ret += NormalStyle.Render("[ ] ")
-			ret += NormalStyle.Render(choice)
-		}
+	/// Render Back First
+
+	if cc.cursor == 0 {
+		ret += SelectedStyle.Render(cc.choices[0])
+		ret += "\n"
+	} else {
+		ret += NormalStyle.Render(cc.choices[0])
 		ret += "\n"
 	}
+
+	ret += "\n"
+
+	if cc.cursor == 1 {
+		if !cc.editingName {
+			ret += DimBlueStyle.Render("Press Enter To Start Typing")
+		} else {
+			ret += DimBlueStyle.Render("Press Esc To Stop Typing")
+		}
+	}
+	ret += "\n"
+	ret += cc.input.View()
+
+	if cc.cursor == 2 {
+		ret += "\n"
+		ret += SelectedStyle.Render(cc.choices[1])
+		ret += "\n"
+	} else {
+		ret += "\n"
+		ret += NormalStyle.Render(cc.choices[1])
+		ret += "\n"
+	}
+
+	if cc.err != "" {
+		ret += ErrorStyle.Render("[ ")
+		ret += ErrorStyle.Render(cc.err)
+		ret += ErrorStyle.Render(" ]")
+	}
+
 	return ret
 }
 
 func (cc *createConfigConfirmationScreen) Update(msg tea.Msg, onSetScreen func(screen screen)) {
+
+	if cc.err != "" {
+		cc.currentErrTick++
+		if cc.currentErrTick >= cc.errUpdateTick {
+			cc.err = ""
+			cc.currentErrTick = 0
+		}
+	}
+
+	choices_len := len(cc.choices)
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
+		case "esc":
+			cc.editingName = false
+			cc.input.PlaceholderStyle = DimBlueStyle
+			cc.input.PromptStyle = DimBlueStyle
+			cc.input.Blur()
 		case "enter":
-			choice := cc.choices[cc.cursor]
-			if choice == "Go Back" {
+			switch cc.cursor {
+			case 0:
 				onSetScreen(screenCreateConfig)
-			}
-			if choice == "Create Config" {
-				/// Screen Root For Now
+			case 1:
+				cc.editingName = true
+				cc.input.PlaceholderStyle = BitDimBlueStyle
+				cc.input.PromptStyle = BlueStyle
+				cc.input.Focus()
+			case 2:
+				if cc.input.Value() == "" {
+					cc.err = "Config Name Cannot Be Empty"
+					cc.currentErrTick = 0
+					return
+				}
 				onSetScreen(screenRoot)
+			default:
+				break
 			}
 		case "j":
-			if cc.cursor < len(cc.choices)-1 {
+			if cc.editingName {
+				break
+			}
+			if cc.cursor < choices_len {
 				cc.cursor++
 			}
 		case "k":
+			if cc.editingName {
+				break
+			}
 			if cc.cursor > 0 {
 				cc.cursor--
 			}
 		}
 	}
+	cc.input, _ = cc.input.Update(msg)
 }

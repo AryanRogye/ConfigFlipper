@@ -6,26 +6,41 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var AppStyle = lipgloss.NewStyle().
-	Padding(1, 2).
-	Border(lipgloss.RoundedBorder()).
-	BorderForeground(lipgloss.Color("63"))
+var (
+	AppStyle = lipgloss.NewStyle().
+			Padding(1, 2).
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("63"))
 
-var SelectedStyle = lipgloss.NewStyle().
-	Bold(true).
-	Foreground(lipgloss.Color("229")).
-	Background(lipgloss.Color("63"))
+	SelectedStyle = lipgloss.NewStyle().
+			Bold(true).
+			Foreground(lipgloss.Color("229")).
+			Background(lipgloss.Color("63"))
 
-var TitleStyle = lipgloss.NewStyle().
-	Bold(true).
-	Foreground(lipgloss.Color("250"))
+	TitleStyle = lipgloss.NewStyle().
+			Bold(true).
+			Foreground(lipgloss.Color("250"))
 
-var TitleUnderline = lipgloss.NewStyle().
-	Bold(true).Underline(true).
-	Foreground(lipgloss.Color("250"))
+	TitleUnderline = lipgloss.NewStyle().
+			Bold(true).Underline(true).
+			Foreground(lipgloss.Color("250"))
 
-var NormalStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color("250"))
+	NormalStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("250"))
+
+	BlueStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("#5555C2"))
+
+	BitDimBlueStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("#30305C"))
+
+	DimBlueStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("#242447"))
+	FocusedStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("63"))
+	ErrorStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("#FF0000"))
+)
 
 type screen int
 
@@ -45,7 +60,7 @@ type model struct {
 }
 
 func InitialModel(config models.UserConfig) model {
-	return model{
+	model := model{
 		screen: screenRoot,
 		/// Creating Root Screen
 		root: root{
@@ -57,7 +72,6 @@ func InitialModel(config models.UserConfig) model {
 			},
 			config: config,
 		},
-		/// Other Screens Here
 		createConfigScreen: createConfigScreen{
 			config: config,
 			cursor: 0,
@@ -65,15 +79,10 @@ func InitialModel(config models.UserConfig) model {
 				"Go Back",
 			},
 		},
-		/// Later adding data during runtime
-		createConfigConfirmationScreen: createConfigConfirmationScreen{
-			cursor: 0,
-			choices: [2]string{
-				"Go Back",
-				"Create Config",
-			},
-		},
+		createConfigConfirmationScreen: NewCreateConfigConfirmationScreen(),
 	}
+
+	return model
 }
 
 func (m model) Init() tea.Cmd {
