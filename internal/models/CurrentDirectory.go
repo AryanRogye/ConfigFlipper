@@ -5,13 +5,13 @@ import (
 )
 
 type CurrentDirectory struct {
-	data []currentDirectoryData
+	Data []currentDirectoryData
 }
 func (c *CurrentDirectory) addData(name string, isDir bool) {
 	if isDir {
-		c.data = append(c.data, Folder{name})
+		c.Data = append(c.Data, Folder{name})
 	} else {
-		c.data = append(c.data, File{name})
+		c.Data = append(c.Data, File{name})
 	}
 }
 
@@ -38,16 +38,19 @@ func GetCurrentDirectoryData() (CurrentDirectory, error) {
 }
 
 type currentDirectoryData interface {
-	currentDirNode()
+	Name() string
 }
 
 type File struct {
 	name string
 }
-func (File) currentDirNode() {}
-
+func (f File) Name() string {
+	return f.name
+}
 
 type Folder struct {
 	name string
 }
-func (Folder) currentDirNode() {}
+func (f Folder) Name() string {
+	return f.name
+}

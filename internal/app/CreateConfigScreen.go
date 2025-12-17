@@ -36,16 +36,55 @@ func (cc *createConfigScreen)View() string {
 		}
 		ret += "\n"
 	}
+
+	for i, entry := range(cc.config.CurrentDirectory.Data) {
+		var selected bool
+
+		if cc.cursor == i + 1 {
+			selected = true
+		} else {
+			selected = false
+		}
+
+		switch entry.(type) {
+		case models.File:
+			if selected {
+				ret += selectedStyle.Render("󰂺 ")
+				ret += selectedStyle.Render(entry.Name())
+			} else {
+				ret += normalStyle.Render("󰂺 ")
+				ret += normalStyle.Render(entry.Name())
+			}
+		case models.Folder:
+			if selected {
+				ret += selectedStyle.Render(" ")
+				ret += selectedStyle.Render(entry.Name())
+			} else {
+				ret += normalStyle.Render(" ")
+				ret += normalStyle.Render(entry.Name())
+			}
+		}
+		ret += "\n"
+	}
 	return ret
 }
 
 func (cc *createConfigScreen) Update(msg tea.Msg, onSetScreen func(screen screen)) {
+	totalLength := len(cc.choices) + len(cc.config.CurrentDirectory.Data)
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "enter":
 			if cc.cursor == 0 {
 				onSetScreen(screenRoot)
+			}
+		case "j":
+			if cc.cursor < totalLength - 1 {
+				cc.cursor++
+			}
+		case "k":
+			if cc.cursor > 0 {
+				cc.cursor--
 			}
 		}
 	}
