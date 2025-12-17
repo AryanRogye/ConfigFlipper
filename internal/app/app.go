@@ -109,6 +109,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.createConfigScreen.Update(msg, func(screen screen, data models.CurrentDirectoryData) {
 			if data != nil {
 				m.createConfigConfirmationScreen.data = data
+				m.createConfigConfirmationScreen.input.SetValue("Config_" + data.Name())
 			}
 			m.screen = screen
 		})
