@@ -8,14 +8,13 @@ import (
 
 type createConfigScreen struct {
 	/// list out the files where the user is currently
-	config models.UserConfig
-	cursor int
+	config  models.UserConfig
+	cursor  int
 	choices [1]string
 }
 
-func (cc *createConfigScreen)View() string {
+func (cc *createConfigScreen) View() string {
 	var ret string
-
 
 	selectedStyle := lipgloss.NewStyle().
 		Bold(true).
@@ -24,8 +23,8 @@ func (cc *createConfigScreen)View() string {
 
 	normalStyle := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("250"))
-	
-	ret +=  normalStyle.Render("Create Config Screen")
+
+	ret += normalStyle.Render("Create Config Screen")
 	ret += "\n\n"
 
 	if cc.choices[0] == "Go Back" {
@@ -37,10 +36,10 @@ func (cc *createConfigScreen)View() string {
 		ret += "\n"
 	}
 
-	for i, entry := range(cc.config.CurrentDirectory.Data) {
+	for i, entry := range cc.config.CurrentDirectory.Data {
 		var selected bool
 
-		if cc.cursor == i + 1 {
+		if cc.cursor == i+1 {
 			selected = true
 		} else {
 			selected = false
@@ -69,17 +68,20 @@ func (cc *createConfigScreen)View() string {
 	return ret
 }
 
-func (cc *createConfigScreen) Update(msg tea.Msg, onSetScreen func(screen screen)) {
+func (cc *createConfigScreen) Update(msg tea.Msg, onSetScreen func(screen screen, data models.CurrentDirectoryData)) {
 	totalLength := len(cc.choices) + len(cc.config.CurrentDirectory.Data)
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "enter":
 			if cc.cursor == 0 {
-				onSetScreen(screenRoot)
+				onSetScreen(screenRoot, nil)
+			} else {
+				data := cc.config.CurrentDirectory.Data[cc.cursor-1]
+				onSetScreen(screenCreateConfigConfirmation, data)
 			}
 		case "j":
-			if cc.cursor < totalLength - 1 {
+			if cc.cursor < totalLength-1 {
 				cc.cursor++
 			}
 		case "k":

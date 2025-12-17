@@ -16,14 +16,16 @@ type screen int
 const (
 	screenRoot screen = iota
 	screenCreateConfig
+	screenCreateConfigConfirmation
 	screenSelectConfig
 )
 
 type model struct {
 	screen screen
 
-	root               root
-	createConfigScreen createConfigScreen
+	root                           root
+	createConfigScreen             createConfigScreen
+	createConfigConfirmationScreen createConfigConfirmationScreen
 }
 
 func InitialModel(config models.UserConfig) model {
@@ -45,6 +47,14 @@ func InitialModel(config models.UserConfig) model {
 			cursor: 0,
 			choices: [1]string{
 				"Go Back",
+			},
+		},
+		/// Later adding data during runtime
+		createConfigConfirmationScreen: createConfigConfirmationScreen{
+			cursor: 0,
+			choices: [2]string{
+				"Go Back",
+				"Create Config",
 			},
 		},
 	}
@@ -71,7 +81,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.screen = screen
 		})
 	case screenCreateConfig:
-		m.createConfigScreen.Update(msg, func(screen screen) {
+		m.createConfigScreen.Update(msg, func(screen screen, data models.CurrentDirectoryData) {
+			if data != nil {
+				m.createConfigConfirmationScreen.data = data
+			}
+			m.screen = screen
+		})
+	case screenCreateConfigConfirmation:
+		m.createConfigConfirmationScreen.Update(msg, func(screen screen) {
 			m.screen = screen
 		})
 	default:
@@ -87,6 +104,8 @@ func (m model) View() string {
 		return appStyle.Render(m.root.View())
 	case screenCreateConfig:
 		return appStyle.Render(m.createConfigScreen.View())
+	case screenCreateConfigConfirmation:
+		return appStyle.Render(m.createConfigConfirmationScreen.View())
 	default:
 		return "Unkown\n"
 	}

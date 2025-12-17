@@ -5,7 +5,7 @@ import (
 )
 
 type CurrentDirectory struct {
-	Data []currentDirectoryData
+	Data []CurrentDirectoryData
 }
 func (c *CurrentDirectory) addData(name string, isDir bool) {
 	if isDir {
@@ -37,7 +37,7 @@ func GetCurrentDirectoryData() (CurrentDirectory, error) {
 	return cd, nil
 }
 
-type currentDirectoryData interface {
+type CurrentDirectoryData interface {
 	Name() string
 }
 
