@@ -5,14 +5,24 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type createConfigScreen struct {
+type CreateConfigScreen struct {
 	/// list out the files where the user is currently
-	config  models.UserConfig
+	config  *models.UserConfig
 	cursor  int
 	choices [1]string
 }
 
-func (cc *createConfigScreen) View() string {
+func NewCreateConfigScreen(config *models.UserConfig) *CreateConfigScreen {
+	return &CreateConfigScreen{
+		config: config,
+		cursor: 0,
+		choices: [1]string{
+			"Go Back",
+		},
+	}
+}
+
+func (cc *CreateConfigScreen) View() string {
 	var ret string
 
 	ret += NormalStyle.Render("Create Config Screen")
@@ -59,17 +69,18 @@ func (cc *createConfigScreen) View() string {
 	return ret
 }
 
-func (cc *createConfigScreen) Update(msg tea.Msg, onSetScreen func(screen screen, data models.CurrentDirectoryData)) {
+func (cc *CreateConfigScreen) Update(msg tea.Msg, onSetScreen func(screen screen)) {
 	totalLength := len(cc.choices) + len(cc.config.CurrentDirectory.Data)
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "enter":
 			if cc.cursor == 0 {
-				onSetScreen(screenRoot, nil)
+				onSetScreen(screenRoot)
 			} else {
 				data := cc.config.CurrentDirectory.Data[cc.cursor-1]
-				onSetScreen(screenCreateConfigConfirmation, data)
+				cc.config.Data = data
+				onSetScreen(screenCreateConfigConfirmation)
 			}
 		case "j":
 			if cc.cursor < totalLength-1 {

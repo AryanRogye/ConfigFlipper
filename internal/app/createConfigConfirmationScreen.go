@@ -1,17 +1,18 @@
 package app
 
 import (
+	"strconv"
+
 	"github.com/AryanRogye/ConfigFlipper/internal/models"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type createConfigConfirmationScreen struct {
-	data    models.CurrentDirectoryData
+type CreateConfigConfirmationScreen struct {
 	cursor  int
 	choices [2]string
 	input   textinput.Model
-	config  models.UserConfig
+	config  *models.UserConfig
 
 	editingName    bool
 	err            string
@@ -19,14 +20,14 @@ type createConfigConfirmationScreen struct {
 	currentErrTick int
 }
 
-func NewCreateConfigConfirmationScreen(config models.UserConfig) createConfigConfirmationScreen {
-	c := createConfigConfirmationScreen{
+func NewCreateConfigConfirmationScreen(config *models.UserConfig) *CreateConfigConfirmationScreen {
+	c := CreateConfigConfirmationScreen{
 		cursor: 0,
 		choices: [2]string{
 			"[ Go Back ]",
 			"[ Create Config ]",
 		},
-		config: config,
+		config:         config,
 		errUpdateTick:  5,
 		currentErrTick: 0,
 	}
@@ -44,16 +45,16 @@ func NewCreateConfigConfirmationScreen(config models.UserConfig) createConfigCon
 	input.TextStyle = FocusedStyle
 	c.input = input
 
-	return c
+	return &c
 }
 
-func (cc *createConfigConfirmationScreen) View() string {
+func (cc *CreateConfigConfirmationScreen) View() string {
 	var ret string
 
 	ret += TitleStyle.Render("Are You Sure You Want to Create This Config?")
 	ret += "\n"
 
-	ret += TitleUnderline.Render(cc.data.Name())
+	ret += TitleUnderline.Render(cc.config.Data.Name())
 	ret += "\n\n"
 
 	/// Render Back First
@@ -97,7 +98,7 @@ func (cc *createConfigConfirmationScreen) View() string {
 	return ret
 }
 
-func (cc *createConfigConfirmationScreen) Update(msg tea.Msg, onSetScreen func(screen screen)) {
+func (cc *CreateConfigConfirmationScreen) Update(msg tea.Msg, onSetScreen func(screen screen)) {
 
 	if cc.err != "" {
 		cc.currentErrTick++
@@ -126,12 +127,23 @@ func (cc *createConfigConfirmationScreen) Update(msg tea.Msg, onSetScreen func(s
 				cc.input.PromptStyle = BlueStyle
 				cc.input.Focus()
 			case 2:
-				if cc.input.Value() == "" {
+				name := cc.input.Value()
+				if name == "" {
 					cc.err = "Config Name Cannot Be Empty"
 					cc.currentErrTick = 0
 					return
 				}
-				onSetScreen(screenRoot)
+				count := cc.config.GetNConfigCount(name)
+				if count > 0 {
+					count += 1
+					name = name + "(" + strconv.Itoa(count) + ")"
+				}
+				err := cc.config.CreateConfig(name)
+				if err != nil {
+					cc.err = err.Error()
+				} else {
+					onSetScreen(screenRoot)
+				}
 			default:
 				break
 			}

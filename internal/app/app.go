@@ -51,45 +51,31 @@ const (
 	screenSelectConfig
 )
 
-type model struct {
+type Model struct {
 	screen screen
 
-	root                           root
-	createConfigScreen             createConfigScreen
-	createConfigConfirmationScreen createConfigConfirmationScreen
+	root                           *Root
+	createConfigScreen             *CreateConfigScreen
+	createConfigConfirmationScreen *CreateConfigConfirmationScreen
 }
 
-func InitialModel(config models.UserConfig) model {
-	model := model{
+func InitialModel(config *models.UserConfig) Model {
+	model := Model{
 		screen: screenRoot,
 		/// Creating Root Screen
-		root: root{
-			cursor: 0,
-			choices: [3]string{
-				"Create New Configuration",
-				"Select Configuration",
-				"Open Config Folder",
-			},
-			config: config,
-		},
-		createConfigScreen: createConfigScreen{
-			config: config,
-			cursor: 0,
-			choices: [1]string{
-				"Go Back",
-			},
-		},
+		root:                           NewRoot(config),
+		createConfigScreen:             NewCreateConfigScreen(config),
 		createConfigConfirmationScreen: NewCreateConfigConfirmationScreen(config),
 	}
 
 	return model
 }
 
-func (m model) Init() tea.Cmd {
+func (m Model) Init() tea.Cmd {
 	return nil
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
 	/// Global Keybinds
@@ -106,10 +92,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.screen = screen
 		})
 	case screenCreateConfig:
-		m.createConfigScreen.Update(msg, func(screen screen, data models.CurrentDirectoryData) {
-			if data != nil {
-				m.createConfigConfirmationScreen.data = data
-				m.createConfigConfirmationScreen.input.SetValue("Config_" + data.Name())
+		m.createConfigScreen.Update(msg, func(screen screen) {
+			if screen == screenCreateConfigConfirmation {
+				m.createConfigConfirmationScreen.input.SetValue("Config_" + m.createConfigScreen.config.Data.Name())
 			}
 			m.screen = screen
 		})
@@ -124,7 +109,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m model) View() string {
+func (m Model) View() string {
 	switch m.screen {
 	case screenRoot:
 		return AppStyle.Render(m.root.View())

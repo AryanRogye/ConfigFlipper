@@ -7,13 +7,25 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type root struct {
+type Root struct {
 	cursor  int
 	choices [3]string
-	config  models.UserConfig
+	config  *models.UserConfig
 }
 
-func (r *root) View() string {
+func NewRoot(config *models.UserConfig) *Root {
+	return &Root{
+		cursor: 0,
+		choices: [3]string{
+			"Create New Configuration",
+			"Select Configuration",
+			"Open Config Folder",
+		},
+		config: config,
+	}
+}
+
+func (r *Root) View() string {
 	var ret string
 
 	ret += TitleStyle.Render("ConfigFlipper")
@@ -33,7 +45,7 @@ func (r *root) View() string {
 	return ret
 }
 
-func (r *root) Update(msg tea.Msg, onSetScreen func(screen screen)) {
+func (r *Root) Update(msg tea.Msg, onSetScreen func(screen screen)) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
