@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -72,8 +73,28 @@ func (c *UserConfig) GetNConfigCount(configName string) int {
 }
 
 func (c *UserConfig) CreateConfig(configName string) error {
+	if c.Data == nil {
+		return errors.New("no data found")
+	}
 	path := filepath.Join(c.ConfigDir, configName)
-	return os.Mkdir(path, permissionMode)
+	err := os.Mkdir(path, permissionMode)
+
+	if err == nil {
+		/// Create SymLink for Data
+
+		// First we get the original source path
+		sourcePath := c.Data.SourceDir()
+
+		// Get Source File System
+		srcFS := os.DirFS(sourcePath)
+
+		/// Copy
+		err = os.CopyFS(path, srcFS)
+		if err != nil {
+			return err
+		}
+	}
+	return err
 }
 
 // OpenConfigFolder

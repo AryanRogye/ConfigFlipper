@@ -138,12 +138,12 @@ func (cc *CreateConfigConfirmationScreen) Update(msg tea.Msg, onSetScreen func(s
 					count += 1
 					name = name + "(" + strconv.Itoa(count) + ")"
 				}
-				err := cc.config.CreateConfig(name)
-				if err != nil {
-					cc.err = err.Error()
-				} else {
-					onSetScreen(screenRoot)
-				}
+				cc.config.CreateConfig(name)
+				//if err != nil {
+				//	cc.err = err.Error()
+				//} else {
+				//	onSetScreen(screenRoot)
+				//}
 			default:
 				break
 			}
